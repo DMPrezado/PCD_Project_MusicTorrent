@@ -2,34 +2,36 @@ package Logic;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.List;
 
-public class NodeConnectionHandler {
-    private int port;
+public class NodeConnectionHandler{
+    private Node node;
     private ServerSocket serverSocket;
-    private ExecutorService threadPool = Executors.newFixedThreadPool(5); // Limita o número de threads a 5
+    private List<Socket> connectedNodesSockets;
 
-    public NodeConnectionHandler(int port) {
-        this.port = port;
+    public NodeConnectionHandler(Node node) {
+        this.node=node;
+        connectedNodesSockets = new ArrayList<>();
     }
 
     // Método para iniciar o servidor e aceitar conexões
     public void startServer() {
-        try {
-            serverSocket = new ServerSocket(port);
-            System.out.println("Servidor iniciado no porto: " + port);
+            try {
+                serverSocket = new ServerSocket(node.getPort());
+                System.out.println("ServerSocket iniciado no porto: " + node.getPort());
 
-            // Loop para aceitar conexões de forma assíncrona
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Conexão estabelecida com: " + clientSocket.getInetAddress().getHostAddress());
-                threadPool.execute(new ClientHandler(clientSocket));
+                while (true) {
+                // Loop para aceitar conexões de forma assíncrona
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("Conexão estabelecida com: [" + clientSocket.getInetAddress().getHostAddress()+":"+clientSocket.getPort());
+                    connectedNodesSockets.add(clientSocket);
+                }
+            } catch (IOException e) {
+                System.out.println("Erro ao iniciar o servidor: " + e.getMessage());
             }
-        } catch (IOException e) {
-            System.out.println("Erro ao iniciar o servidor: " + e.getMessage());
-        }
     }
+
 
     // Método para se ligar a outro nó
     public void connectToNode(String address, int port) {
@@ -52,31 +54,4 @@ public class NodeConnectionHandler {
         }
     }
 
-    // Classe interna para tratar as conexões de clientes
-    private class ClientHandler implements Runnable {
-        private Socket clientSocket;
-
-        public ClientHandler(Socket clientSocket) {
-            this.clientSocket = clientSocket;
-        }
-
-        @Override
-        public void run() {
-            try {
-                // Ler mensagens do cliente
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String message = in.readLine();
-                System.out.println("Mensagem recebida: " + message);
-
-                // Responder ao cliente
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                out.println("Mensagem recebida com sucesso!");
-
-                // Fechar a conexão
-                clientSocket.close();
-            } catch (IOException e) {
-                System.out.println("Erro ao tratar a conexão do cliente: " + e.getMessage());
-            }
-        }
-    }
 }

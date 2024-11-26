@@ -6,7 +6,9 @@ import Logic.Node;
 public class IscTorrent1 {
     
     public static void main(String[] args) {
-        Node node = new Node("localhost", 8081);
-        IscTorrentGUI gui = new IscTorrentGUI(node);
+        String folderPath = "Projeto_PCD/FilesNode1/";
+        Node node = new Node("localhost", 8081,folderPath);
+        new IscTorrentGUI(node);
     }
+    
 }

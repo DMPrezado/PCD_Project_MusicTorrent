@@ -6,27 +6,34 @@ import java.util.List;
 
 // Ponto 2
 public class FileManager {
-    private static final String WORKING_FOLDER_PATH = "Projeto_PCD/files";
+    private String folderPath;
     private File[] files;
 
-    public FileManager() {
+    public FileManager(String folderPath) {
+        this.folderPath = folderPath;
         loadNodeFiles();
         System.out.println(toString());
     }
 
     // Método para carregar os ficheiros da pasta de trabalho
     private void loadNodeFiles() {
-        File folder = new File(WORKING_FOLDER_PATH);
-
+        File folder = new File(folderPath);
+        
         // Verificar se a pasta existe e é um diretório
         if (folder.exists()) {
-
             files = folder.listFiles();
-            toString();
-
         } else {
             System.out.println("A pasta de trabalho não foi encontrada.");
         }
+    }
+
+    public void addFileToNodeFolder(File newFile){
+        File[] newFiles = new File[files.length+1];
+        for(int i = 0; i<= files.length-1; i++)
+            newFiles[i] = files[i];
+        newFiles[files.length] = newFile;
+
+        files = newFiles;
     }
 
     public List<String> getFilesNames() {

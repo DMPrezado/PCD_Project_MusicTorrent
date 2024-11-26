@@ -2,7 +2,6 @@ package GUI;
 
 import javax.swing.*;
 
-import Logic.FileManager;
 import Logic.Node;
 
 import java.awt.*;
@@ -12,21 +11,16 @@ import java.io.File;
 
 public class IscTorrentGUI extends JFrame {
     private JList<File> resultList;
-    private FileManager fileManager;
     private Node localNode;  // Campo para armazenar o nó local
-    private String nodeAddress;  // Endereço do nó local
-    private int nodePort;        // Porto do nó local
     private DefaultListModel<File> filesListModel = new DefaultListModel<>();
 
 
 
     public IscTorrentGUI(Node node) {
-        this.localNode = node;
-        this.nodeAddress = node.getAddress();  // Recebe o endereço do nó
-        this.nodePort = node.getPort();        // Recebe a porta do nó
+        this.localNode = node;      // Recebe a porta do nó
 
         //Configurações da Janela
-        setTitle("IscTorrent"+ nodePort);
+        setTitle("IscTorrent "+ node.getPort());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 350);
         setLayout(new BorderLayout());
@@ -53,8 +47,7 @@ public class IscTorrentGUI extends JFrame {
         add(searchPanel, BorderLayout.NORTH);
 
         // Lista de resultados vazia
-        JList<File> resultList = new JList<>(filesListModel);
-        // Criar um renderizador de células para exibir apenas o nome do arquivo
+        resultList = new JList<>(filesListModel);
         // Criar um renderizador de células para exibir apenas o nome do arquivo
         resultList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
             // Exibe o nome do arquivo usando value.getName()
@@ -80,11 +73,19 @@ public class IscTorrentGUI extends JFrame {
         actionPanel.add(buttonConnectToNode);
         add(actionPanel, BorderLayout.EAST);
 
-        // Listeners
+        // Conectar
         buttonConnectToNode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 openConnectionDialog();
+            }
+        });
+
+        //Interagir com ficheiros selecionados
+        buttonDownload.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Selected File: "+resultList.getSelectedValuesList());
             }
         });
     }

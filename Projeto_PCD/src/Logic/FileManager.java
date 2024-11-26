@@ -14,8 +14,6 @@ public class FileManager {
         System.out.println(toString());
     }
 
-
-
     // Método para carregar os ficheiros da pasta de trabalho
     private void loadNodeFiles() {
         File folder = new File(WORKING_FOLDER_PATH);

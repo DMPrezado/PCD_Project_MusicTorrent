@@ -55,9 +55,19 @@ public class IscTorrentGUI extends JFrame {
         // Lista de resultados vazia
         JList<File> resultList = new JList<>(filesListModel);
         // Criar um renderizador de células para exibir apenas o nome do arquivo
+        // Criar um renderizador de células para exibir apenas o nome do arquivo
         resultList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
             // Exibe o nome do arquivo usando value.getName()
-            return new JLabel(value.getName());
+            JLabel label = new JLabel(value.getName());
+            if (isSelected) {
+                label.setBackground(list.getSelectionBackground());
+                label.setForeground(list.getSelectionForeground());
+            } else {
+                label.setBackground(list.getBackground());
+                label.setForeground(list.getForeground());
+            }
+            label.setOpaque(true);  // Necessário para mostrar a cor de fundo
+            return label;
         });
         add(new JScrollPane(resultList), BorderLayout.CENTER);
 

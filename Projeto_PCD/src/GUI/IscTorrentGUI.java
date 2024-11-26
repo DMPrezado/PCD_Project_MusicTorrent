@@ -16,18 +16,30 @@ public class IscTorrentGUI extends JFrame {
     private String nodeAddress;  // Endereço do nó local
     private int nodePort;        // Porto do nó local
 
-    public IscTorrentGUI(String nodeAddress, int nodePort) {
-        this.nodeAddress = nodeAddress;  // Recebe o endereço do nó
-        this.nodePort = nodePort;        // Recebe a porta do nó
+    public IscTorrentGUI(Node node) {
+        this.localNode = node;
+        this.nodeAddress = node.getAddress();  // Recebe o endereço do nó
+        this.nodePort = node.getPort();        // Recebe a porta do nó
 
-        setTitle("IscTorrent");
+        //Configurações da Janela
+        setTitle("IscTorrent"+ nodePort);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 350);
         setLayout(new BorderLayout());
 
+        addComponents();
+
+        // Centraliza a janela no ecrã
+        setLocationRelativeTo(null);
+
+        updateResultList();
+
+        setVisible(true);
+    }
+
+    private void addComponents(){
         // Campo de pesquisa e botão
         JPanel searchPanel = new JPanel(new BorderLayout());
-
         JLabel searchLabel = new JLabel("Texto a procurar:");
         JTextField searchField = new JTextField();
         JButton buttonSearch = new JButton("Procurar");
@@ -36,7 +48,7 @@ public class IscTorrentGUI extends JFrame {
         searchPanel.add(buttonSearch, BorderLayout.EAST);
         add(searchPanel, BorderLayout.NORTH);
 
-        // Lista de resultados
+        // Lista de resultados vazia
         resultList = new JList<>();
         add(new JScrollPane(resultList), BorderLayout.CENTER);
 
@@ -49,12 +61,6 @@ public class IscTorrentGUI extends JFrame {
         actionPanel.add(buttonConnectToNode);
         add(actionPanel, BorderLayout.EAST);
 
-        // Centraliza a janela no ecrã
-        setLocationRelativeTo(null);
-
-        // Nó que inicializa a GUI
-        getLocalNode();
-
         // Listeners
         buttonConnectToNode.addActionListener(new ActionListener() {
             @Override
@@ -62,12 +68,6 @@ public class IscTorrentGUI extends JFrame {
                 openConnectionDialog();
             }
         });
-    }
-
-    private void getLocalNode() {
-        // Nó local com o endereço e porto recebidos
-        localNode = new Node(nodeAddress, nodePort);
-        System.out.println("Nó local: " + nodeAddress + " : " + nodePort);
     }
 
     private void openConnectionDialog() {
@@ -94,15 +94,14 @@ public class IscTorrentGUI extends JFrame {
 
     // Ponto 2
     private void updateResultList() {
-        // Atualizar a lista de resultados com os ficheiros partilhados
+
+        // Atualizar a lista de resultados com os ficheiros atualmente na pasta "files"
+        // criando uma nova lista e substituindo a Lista atual
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        for (String fileName : fileManager.getSharedFiles()) {
-            listModel.addElement(fileName);
+        for (String fileName : localNode.getFileManager().getNodeFiles()) {
+                listModel.addElement(fileName);
         }
         resultList.setModel(listModel);
     }
 
-    public void showGUI() {
-        setVisible(true);
-    }
 }

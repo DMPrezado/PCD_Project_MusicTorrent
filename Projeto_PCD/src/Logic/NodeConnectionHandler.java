@@ -35,7 +35,7 @@ public class NodeConnectionHandler {
     public void connectToNode(String address, int port) {
         try {
             Socket socket = new Socket(address, port);
-            System.out.println("Ligado ao nó: " + address + " no porto: " + port);
+            System.out.println("Ligado a: [" + address + ":" + port+"]");
 
             // Enviar uma mensagem de teste
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

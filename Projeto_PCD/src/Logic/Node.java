@@ -4,17 +4,25 @@ public class Node {
     private String address;
     private int port;
     private NodeConnectionHandler connectionHandler;
+    private FileManager fileManager;
 
     public Node(String address, int port) {
         this.address = address;
         this.port = port;
-        this.connectionHandler = new NodeConnectionHandler(port);
+        this.fileManager = new FileManager();
+        start();
     }
 
     // Método para iniciar o servidor do nó
-    public void start() {
+    private void start() {
+        //Mensagem para status do programa
+        System.out.println("Nó iniciado:\t [" + address + ":" + port+"]");
+        waitForConnection();       
+    }
+
+    private void waitForConnection(){
+        connectionHandler = new NodeConnectionHandler(port);
         new Thread(() -> connectionHandler.startServer()).start();
-        System.out.println("Nó iniciado no endereço " + address + " e porto " + port);
     }
 
     // Método para conectar a outro nó
@@ -33,5 +41,9 @@ public class Node {
 
     public Node getNode() {
         return this;
+    }
+
+    public FileManager getFileManager() {
+        return fileManager;
     }
 }

@@ -9,15 +9,10 @@ public class Node {
     public Node(String address, int port) {
         this.address = address;
         this.port = port;
-        this.fileManager = new FileManager();
-        start();
-    }
+        this.fileManager = new FileManager(); 
 
-    // Método para iniciar o servidor do nó
-    private void start() {
-        //Mensagem para status do programa
         System.out.println("Nó iniciado:\t [" + address + ":" + port+"]");
-        waitForConnection();       
+        waitForConnection(); 
     }
 
     private void waitForConnection(){

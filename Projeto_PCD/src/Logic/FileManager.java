@@ -7,12 +7,13 @@ import java.util.List;
 // Ponto 2
 public class FileManager {
     private static final String WORKING_FOLDER_PATH = "Projeto_PCD/files";
-    private List<String> nodeFiles;
+    private File[] files;
 
     public FileManager() {
-        nodeFiles = new ArrayList<>();
         loadNodeFiles();
+        System.out.println(toString());
     }
+
 
 
     // Método para carregar os ficheiros da pasta de trabalho
@@ -22,34 +23,44 @@ public class FileManager {
         // Verificar se a pasta existe e é um diretório
         if (folder.exists()) {
 
-            File[] files = folder.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isFile()) {
-                        nodeFiles.add(file.getName());
-                    }
-                }
-            }
-
-            // Exibir os ficheiros carregados (apenas para verificar)
-            System.out.println("Ficheiros carregados:");
-            for (String fileName : nodeFiles) {
-                System.out.println("\t"+fileName);
-            }
+            files = folder.listFiles();
+            toString();
 
         } else {
             System.out.println("A pasta de trabalho não foi encontrada.");
         }
     }
 
-    
+    public List<String> getFilesNames() {
+        List<String> filesNames = new ArrayList<String>();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    filesNames.add(file.getName());
+                }
+            }
+        }
+
+        return filesNames;
+    }
 
     public void updateNodeFiles(){
         loadNodeFiles();
     }
 
-    // Método para obter a lista de ficheiros partilhados
-    public List<String> getNodeFiles() {
-        return nodeFiles;
+    public File[] getFiles() {
+        return files;
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        // Exibir os ficheiros carregados (apenas para verificar)
+        str += "Ficheiros carregados:\n";
+        for (String fileName : getFilesNames()) {
+            str+= "\t"+fileName+"\n";
+        }
+        return str;
     }
 }

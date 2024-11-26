@@ -8,13 +8,17 @@ import Logic.Node;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class IscTorrentGUI extends JFrame {
-    private JList<String> resultList;
+    private JList<File> resultList;
     private FileManager fileManager;
     private Node localNode;  // Campo para armazenar o nó local
     private String nodeAddress;  // Endereço do nó local
     private int nodePort;        // Porto do nó local
+    private DefaultListModel<File> filesListModel = new DefaultListModel<>();
+
+
 
     public IscTorrentGUI(Node node) {
         this.localNode = node;
@@ -32,7 +36,7 @@ public class IscTorrentGUI extends JFrame {
         // Centraliza a janela no ecrã
         setLocationRelativeTo(null);
 
-        updateResultList();
+        updateFileList();
 
         setVisible(true);
     }
@@ -49,12 +53,17 @@ public class IscTorrentGUI extends JFrame {
         add(searchPanel, BorderLayout.NORTH);
 
         // Lista de resultados vazia
-        resultList = new JList<>();
+        JList<File> resultList = new JList<>(filesListModel);
+        // Criar um renderizador de células para exibir apenas o nome do arquivo
+        resultList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            // Exibe o nome do arquivo usando value.getName()
+            return new JLabel(value.getName());
+        });
         add(new JScrollPane(resultList), BorderLayout.CENTER);
+
 
         // Botões de ação
         JPanel actionPanel = new JPanel(new GridLayout(2, 1));
-
         JButton buttonDownload = new JButton("Descarregar");
         JButton buttonConnectToNode = new JButton("Ligar a Nó");
         actionPanel.add(buttonDownload);
@@ -93,15 +102,17 @@ public class IscTorrentGUI extends JFrame {
     }
 
     // Ponto 2
-    private void updateResultList() {
+    public void updateFileList() {
+        filesListModel.clear();
 
-        // Atualizar a lista de resultados com os ficheiros atualmente na pasta "files"
-        // criando uma nova lista e substituindo a Lista atual
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        for (String fileName : localNode.getFileManager().getNodeFiles()) {
-                listModel.addElement(fileName);
+        File[] files = localNode.getFileManager().getFiles();
+        for (File file : files) {
+            filesListModel.addElement(file); // Add each file or directory to the model
         }
-        resultList.setModel(listModel);
+
+        //Para atualizao o JList??????
+        //resultList.setModel(filesListModel);
+
     }
 
 }

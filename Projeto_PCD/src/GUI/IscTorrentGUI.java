@@ -120,10 +120,6 @@ public class IscTorrentGUI extends JFrame {
         for (File file : files) {
             filesListModel.addElement(file); // Add each file or directory to the model
         }
-
-        //Para atualizao o JList??????
-        //resultList.setModel(filesListModel);
-
     }
 
 }

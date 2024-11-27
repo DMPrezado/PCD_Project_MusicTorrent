@@ -24,8 +24,9 @@ public class NodeConnectionHandler{
                 while (true) {
                 // Loop para aceitar conexões de forma assíncrona
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("Conexão estabelecida com: [" + clientSocket.getInetAddress().getHostAddress()+":"+clientSocket.getPort());
+                    System.out.println("Conexão estabelecida com: [" + clientSocket.getInetAddress().getHostAddress()+":"+clientSocket.getPort()+"]");
                     connectedNodesSockets.add(clientSocket);
+                    listenToSockets();
                 }
             } catch (IOException e) {
                 System.out.println("Erro ao iniciar o servidor: " + e.getMessage());
@@ -37,11 +38,13 @@ public class NodeConnectionHandler{
     public void connectToNode(String address, int port) {
         try {
             Socket socket = new Socket(address, port);
-            System.out.println("Ligado a: [" + address + ":" + port+"]");
+            System.out.println("Conexão estabelecida com: [" + socket.getInetAddress().getHostAddress()+":"+socket.getPort()+"]");
 
             // Enviar uma mensagem de teste
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.println("Olá do nó cliente!");
+            out.println("Sou o porto:");
+            out.println(node.getPort());
 
             // Receber a resposta
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -53,5 +56,24 @@ public class NodeConnectionHandler{
             System.out.println("Erro ao conectar ao nó: " + e.getMessage());
         }
     }
+
+
+    
+
+
+    private void listenToSockets() {
+    for (Socket socket : connectedNodesSockets) {
+        new Thread(() -> {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                String message;
+                while ((message = in.readLine()) != null) {
+                    System.out.println("Mensagem recebida de [" + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + "]: " + message);
+                }
+            } catch (IOException e) {
+                System.out.println("Erro ao ler do socket [" + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + "]: " + e.getMessage());
+            }
+        }).start();
+    }
+}
 
 }

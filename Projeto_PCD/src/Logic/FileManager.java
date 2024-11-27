@@ -50,6 +50,7 @@ public class FileManager {
         return filesNames;
     }
 
+    //Talvez desnecessário...
     public void updateNodeFiles(){
         loadNodeFiles();
     }
@@ -58,6 +59,13 @@ public class FileManager {
         return files;
     }
 
+    public List<File> getFilesList(){
+        List<File> filesList = new ArrayList<>();
+        for (File file : files)
+            filesList.add(file);
+        return filesList;
+    }
+    
     @Override
     public String toString() {
         String str = "";

@@ -1,6 +1,7 @@
 package Logic;
 
 public class Node {
+    private static Node node;
     private String address;
     private int port;
     private NodeConnectionHandler connectionHandler;
@@ -11,6 +12,7 @@ public class Node {
         this.port = port;
         this.fileManager = new FileManager(folderPath); 
         this.connectionHandler= new NodeConnectionHandler(this);
+        node = this;
 
         System.out.println("Nó iniciado:\t [" + address + ":" + port+"]");
         connectionHandler.startServer();
@@ -26,4 +28,6 @@ public class Node {
     public int getPort() {return port;}
     public FileManager getFileManager() {return fileManager;}
     public NodeConnectionHandler getConnectionHandler() {return connectionHandler;}
+    
+    public static Node getNode() {return node;}
 }

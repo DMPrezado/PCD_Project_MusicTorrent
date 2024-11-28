@@ -2,6 +2,7 @@ package GUI;
 
 import javax.swing.*;
 
+import Logic.Connection;
 import Logic.Node;
 
 import java.awt.*;
@@ -96,7 +97,7 @@ public class IscTorrentGUI extends JFrame {
         buttonDownload.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                test();
+                test1();
             }
         });
     }
@@ -134,34 +135,26 @@ public class IscTorrentGUI extends JFrame {
     }
 
 
-    private void test(){
+    //com connections
+    public void test1(){
         
         Object[] set= localNode.getConnectionHandler().getConnections().keySet().toArray();
-        Socket socket = localNode.getConnectionHandler().getConnections().get(set[0]);
-
-        System.out.println(socket);
+        Connection connection = localNode.getConnectionHandler().getConnections().get(set[0]);
 
         try {
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream out = connection.getOut();
 
             // Enviar uma mensagem de teste
-            Object question = "Mensagem de Teste";
+            Object question = "Mensagem de Teste1";
             System.out.println("Question to " + set[0] + ": " + question);
             out.writeObject(question);
             out.flush();
 
-            // Receber resposta
-            Object answer = in.readObject();
-            System.out.println("Answer from " + set[0] + ": " + answer);
-
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
+            System.out.println("Deu mal no teste1");
             e.printStackTrace();
         }
 
     }
+
 }

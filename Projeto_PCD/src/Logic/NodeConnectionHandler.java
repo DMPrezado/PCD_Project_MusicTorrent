@@ -5,10 +5,11 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class NodeConnectionHandler {
     private Node node;
     private ServerSocket serverSocket;
-    private Map<Integer, Socket> connections;
+    private Map<Integer, Connection> connections;
 
     public NodeConnectionHandler(Node node) {
         this.node = node;
@@ -26,12 +27,12 @@ public class NodeConnectionHandler {
                 while (true) {
                     try {
                         Socket clientSocket = serverSocket.accept();
-                        connections.put(clientSocket.getPort(), clientSocket);
+                        clientSocket.setKeepAlive(true);
+                        
+                        Connection connection = new Connection(clientSocket);
+                        connections.put(clientSocket.getPort(), connection);
+
                         System.out.println("Conexão estabelecida com: [" + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort() + "]");
-
-                        // Thread para lidar com cada cliente individualmente
-                        new Thread(() -> handleClientConnection(clientSocket)).start();
-
                     } catch (IOException e) {
                         System.err.println("Erro ao aceitar conexão: " + e.getMessage());
                     }
@@ -39,58 +40,20 @@ public class NodeConnectionHandler {
             }).start();
 
         } catch (IOException e) {
-            System.err.println("Problema ao iniciar o ServerSocket no porto: " + node.getPort());
-            e.printStackTrace();
+            System.err.println("Problema ao iniciar o ServerSocket: "+ e.getMessage());
         }
     }
 
-    // Método para tratar cada cliente conectado
-    private void handleClientConnection(Socket clientSocket) {
-        try (
-            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
-
-            // Receber objeto de teste
-            Object question = in.readObject();
-            System.out.println("Question from " + clientSocket.getPort() + ": " + question);
-
-            // Enviar resposta
-            Object answer = "Mensagem de Teste Recebida";
-            System.out.println("Answer to " + clientSocket.getPort() + ": " + answer);
-            out.writeObject(answer);
-            out.flush();
-
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Problemas com os INs e OUTs dos sockets: [" + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort() + "]");
-            e.printStackTrace();
-        }
-    }
 
     // Método para se ligar a outro nó
     public void connectToNode(String destAddress, int destPort) {
         try {
             Socket socket = new Socket(destAddress, destPort);
-            connections.put(destPort, socket);
-            System.out.println("Conexão estabelecida com: [" + socket.getInetAddress().getHostAddress() + ":" + destPort + "]");
-
-            // Criar fluxos de entrada e saída
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-
-            // Enviar uma mensagem de teste
-            Object question = "Mensagem de Teste";
-            System.out.println("Question to " + destPort + ": " + question);
-            out.writeObject(question);
-            out.flush();
-
-            // Receber resposta
-            Object answer = in.readObject();
-            System.out.println("Answer from " + destPort + ": " + answer);
-
+            socket.setKeepAlive(true);
+            connections.put(destPort, new Connection(socket));
             
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.err.println("Erro ao conectar-se ao nó [" + destAddress + ":" + destPort + "]");
-            e.printStackTrace();
         }
     }
 
@@ -102,5 +65,5 @@ public class NodeConnectionHandler {
 
 
     //Getters Para testes (Possivel que seja para eliminar)
-    public Map<Integer, Socket> getConnections() {return connections;}
+    public Map<Integer, Connection> getConnections() {return connections;}
 }

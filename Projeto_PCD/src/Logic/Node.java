@@ -17,12 +17,12 @@ public class Node {
     }
 
     private void waitForConnection(){
-        new Thread(() -> connectionHandler.startServer()).start();
+        connectionHandler.startServer();
     }
 
     // Método para conectar a outro nó
     public void connectTo(String remoteAddress, int remotePort) {
-        new Thread(() -> connectionHandler.connectToNode(remoteAddress, remotePort)).start();
+        connectionHandler.connectToNode(remoteAddress, remotePort);
     }
 
     // Getters

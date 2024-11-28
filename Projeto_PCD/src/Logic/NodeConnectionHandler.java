@@ -2,78 +2,81 @@ package Logic;
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NodeConnectionHandler{
     private Node node;
     private ServerSocket serverSocket;
-    private List<Socket> connectedNodesSockets;
+    private Map<Integer,Connection> connections;
 
     public NodeConnectionHandler(Node node) {
         this.node=node;
-        connectedNodesSockets = new ArrayList<>();
+        connections = new HashMap<>();
+
     }
+
 
     // Método para iniciar o servidor e aceitar conexões
     public void startServer() {
-            try {
-                serverSocket = new ServerSocket(node.getPort());
-                System.out.println("ServerSocket iniciado no porto: " + node.getPort());
+        try {
+            serverSocket = new ServerSocket(node.getPort());
+            System.out.println("ServerSocket iniciado no porto: " + node.getPort());
 
-                while (true) {
-                // Loop para aceitar conexões de forma assíncrona
-                    Socket clientSocket = serverSocket.accept();
-                    System.out.println("Conexão estabelecida com: [" + clientSocket.getInetAddress().getHostAddress()+":"+clientSocket.getPort()+"]");
-                    connectedNodesSockets.add(clientSocket);
-                    listenToSockets();
-                }
-            } catch (IOException e) {
-                System.out.println("Erro ao iniciar o servidor: " + e.getMessage());
+            while (true) {
+                new Thread(() -> {
+                    // Loop para aceitar conexões de forma assíncrona
+                    Socket clientSocket;
+                    try {
+                        clientSocket = serverSocket.accept();
+                        // Aceita uma conexão
+                        Connection connection = receiveConnection(clientSocket); // Recebe a conexão
+
+                    
+                
+                        // Aqui você pode manipular a conexão de forma assíncrona
+                        connections.put(connection.getNodePortB(), connection);
+                        System.out.println("Conexão estabelecida com: [" + connection.getInetAddress().getHostAddress() + ":" + connection.getNodePortA() + "]");
+                    } catch (IOException | ClassNotFoundException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } 
+                }).start(); // Inicia a thread para tratar a conexão
             }
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        
     }
+
+
+    private Connection receiveConnection(Socket clientSocket) throws ClassNotFoundException, IOException {
+        ObjectInputStream inConnection = new ObjectInputStream(clientSocket.getInputStream());
+        Connection connection = null;
+        while (true) {
+            Object object = inConnection.readObject();
+            if (object instanceof Connection) {
+                connection = (Connection) object;
+                break;
+            }
+        }
+        return connection;
+    }
+
 
 
     // Método para se ligar a outro nó
-    public void connectToNode(String address, int port) {
-        try {
-            Socket socket = new Socket(address, port);
-            System.out.println("Conexão estabelecida com: [" + socket.getInetAddress().getHostAddress()+":"+socket.getPort()+"]");
+    public void connectToNode(String destAddress, int destPort) {
+        Connection connection = new Connection(node.getPort(), destPort);
+        connections.put(destPort, connection);
+        System.out.println("Conexão estabelecida com: [" + connection.getInetAddress().getHostAddress()+":"+connection.getPort()+"]");
 
-            // Enviar uma mensagem de teste
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println("Olá do nó cliente!");
-            out.println("Sou o porto:");
-            out.println(node.getPort());
-
-            // Receber a resposta
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            System.out.println("Resposta do servidor: " + in.readLine());
-
-            // Fechar a conexão (ou mantê-la aberta, dependendo da lógica do seu sistema)
-            socket.close();
-        } catch (IOException e) {
-            System.out.println("Erro ao conectar ao nó: " + e.getMessage());
-        }
+        // Enviar uma mensagem de teste
+        connection.out(new String("Mensagem de teste!"));
     }
 
-
-    
-
-
-    private void listenToSockets() {
-    for (Socket socket : connectedNodesSockets) {
-        new Thread(() -> {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                String message;
-                while ((message = in.readLine()) != null) {
-                    System.out.println("Mensagem recebida de [" + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + "]: " + message);
-                }
-            } catch (IOException e) {
-                System.out.println("Erro ao ler do socket [" + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + "]: " + e.getMessage());
-            }
-        }).start();
-    }
 }
 
-}

@@ -13,10 +13,6 @@ public class Node {
         this.connectionHandler= new NodeConnectionHandler(this);
 
         System.out.println("Nó iniciado:\t [" + address + ":" + port+"]");
-        waitForConnection(); 
-    }
-
-    private void waitForConnection(){
         connectionHandler.startServer();
     }
 
@@ -26,19 +22,8 @@ public class Node {
     }
 
     // Getters
-    public String getAddress() {
-        return address;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public Node getNode() {
-        return this;
-    }
-
-    public FileManager getFileManager() {
-        return fileManager;
-    }
+    public String getAddress() {return address;}
+    public int getPort() {return port;}
+    public FileManager getFileManager() {return fileManager;}
+    public NodeConnectionHandler getConnectionHandler() {return connectionHandler;}
 }

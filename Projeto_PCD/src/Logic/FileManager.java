@@ -50,11 +50,6 @@ public class FileManager {
         return filesNames;
     }
 
-    //Talvez desnecessário...
-    public void updateNodeFiles(){
-        loadNodeFiles();
-    }
-
     public File[] getFiles() {
         return files;
     }

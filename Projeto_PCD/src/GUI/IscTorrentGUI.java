@@ -8,6 +8,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 public class IscTorrentGUI extends JFrame {
     private JList<File> resultList;
@@ -82,10 +86,17 @@ public class IscTorrentGUI extends JFrame {
         });
 
         //Interagir com ficheiros selecionados
+        // buttonDownload.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         System.out.println("Selected File: "+resultList.getSelectedValuesList());
+        //     }
+        // });
+
         buttonDownload.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Selected File: "+resultList.getSelectedValuesList());
+                test();
             }
         });
     }
@@ -122,4 +133,35 @@ public class IscTorrentGUI extends JFrame {
         }
     }
 
+
+    private void test(){
+        
+        Object[] set= localNode.getConnectionHandler().getConnections().keySet().toArray();
+        Socket socket = localNode.getConnectionHandler().getConnections().get(set[0]);
+
+        System.out.println(socket);
+
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+            // Enviar uma mensagem de teste
+            Object question = "Mensagem de Teste";
+            System.out.println("Question to " + set[0] + ": " + question);
+            out.writeObject(question);
+            out.flush();
+
+            // Receber resposta
+            Object answer = in.readObject();
+            System.out.println("Answer from " + set[0] + ": " + answer);
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
 }

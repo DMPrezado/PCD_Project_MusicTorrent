@@ -12,17 +12,17 @@ import java.io.File;
 
 public class IscTorrentGUI extends JFrame {
     private JList<File> resultList;
-    private Node localNode;  // Campo para armazenar o nó local
+    private Node node;  // Campo para armazenar o nó local
     private DefaultListModel<File> filesListModel = new DefaultListModel<>();
 
 
 
     public IscTorrentGUI(Node node) {
-        this.localNode = node;      // Recebe a porta do nó
+        this.node = node;
 
         //Configurações da Janela
-        setTitle("IscTorrent "+ node.getPort());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("IscTorrent " + node.getPort());
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Gerenciar o comportamento de fechamento
         setSize(600, 350);
         setLayout(new BorderLayout());
 
@@ -32,6 +32,7 @@ public class IscTorrentGUI extends JFrame {
         setLocationRelativeTo(null);
 
         updateFileList();
+
 
         setVisible(true);
     }
@@ -109,7 +110,7 @@ public class IscTorrentGUI extends JFrame {
             int port = Integer.parseInt(txtPort.getText());
             
             // Conectar ao nó especificado
-            localNode.connectTo(address, port);
+            node.connectTo(address, port);
            
         }
     }
@@ -118,7 +119,7 @@ public class IscTorrentGUI extends JFrame {
     public void updateFileList() {
         filesListModel.clear();
 
-        File[] files = localNode.getFileManager().getFiles();
+        File[] files = node.getFileManager().getFiles();
         for (File file : files) {
             filesListModel.addElement(file); // Add each file or directory to the model
         }
@@ -132,7 +133,7 @@ public class IscTorrentGUI extends JFrame {
         // localNode.getConnectionHandler().getConnections().values().iterator().next().send("Mensagem de Teste1!!");
 
         //Broadcast
-        for (Connection con : localNode.getConnectionHandler().getConnections().values())
+        for (Connection con : node.getConnectionHandler().getConnections().values())
             con.send("Mensagem de Teste para: "+con.getSocket().getPort());
 
     }

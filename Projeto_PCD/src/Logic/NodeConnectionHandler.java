@@ -9,7 +9,7 @@ import java.util.Map;
 public class NodeConnectionHandler {
     private Node node;
     private ServerSocket serverSocket;
-    private Map<Integer, Connection> connections;
+    private static Map<Integer, Connection> connections;
 
     public NodeConnectionHandler(Node node) {
         this.node = node;
@@ -44,6 +44,11 @@ public class NodeConnectionHandler {
         }
     }
 
+    public void closeConnections(){
+        //Enviar caracter para finalização e eliminação da conexão das Listas dos outros nós
+        for(Connection con : connections.values())
+            con.send('Z');
+    }
 
     // Método para se ligar a outro nó
     public void connectToNode(String destAddress, int destPort) {
@@ -65,13 +70,10 @@ public class NodeConnectionHandler {
         }
     }
 
-
-
-
-
-
-
-
     //Getters Para testes (Possivel que seja para eliminar)
     public Map<Integer, Connection> getConnections() {return connections;}
+
+    public static void closeConnection(int key){
+        connections.remove(key);
+    }
 }

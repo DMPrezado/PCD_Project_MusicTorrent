@@ -28,7 +28,7 @@ public class Connection{
         }
     }
 
-    public void send(Object object){
+    public void send(Object object) {
         try {
             System.out.println("Object to " + socket.getPort() + ": " + object.getClass());
             out.writeObject(object);
@@ -78,6 +78,7 @@ public class Connection{
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();
+            Node.getNode().getConnectionHandler().getConnections().remove(socket.getPort());
             System.out.println("Conexão fechada: " + socket);
         } catch (IOException e) {
             System.err.println("Erro ao fechar conexão: " + socket);

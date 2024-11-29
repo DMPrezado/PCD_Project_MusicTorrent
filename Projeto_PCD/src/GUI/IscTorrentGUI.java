@@ -9,10 +9,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 public class IscTorrentGUI extends JFrame {
     private JList<File> resultList;
@@ -112,15 +108,9 @@ public class IscTorrentGUI extends JFrame {
             String address = txtAddress.getText();
             int port = Integer.parseInt(txtPort.getText());
             
-            // Conetar a outros nós
-            // Verificar se o nó local foi inicializado e conectado
-            if (localNode != null) {
-                // Conectar ao nó especificado
-                localNode.connectTo(address, port);
-                System.out.println("Conectado a " + address + " no porto " + port);
-            } else {
-                System.out.println("Erro: Nó local não inicializado.");
-            }
+            // Conectar ao nó especificado
+            localNode.connectTo(address, port);
+           
         }
     }
 
@@ -137,23 +127,13 @@ public class IscTorrentGUI extends JFrame {
 
     //com connections
     public void test1(){
-        
-        Object[] set= localNode.getConnectionHandler().getConnections().keySet().toArray();
-        Connection connection = localNode.getConnectionHandler().getConnections().get(set[0]);
 
-        try {
-            ObjectOutputStream out = connection.getOut();
+        //Vai buscar uma conecção qualquer só para o teste
+        // localNode.getConnectionHandler().getConnections().values().iterator().next().send("Mensagem de Teste1!!");
 
-            // Enviar uma mensagem de teste
-            Object question = "Mensagem de Teste1";
-            System.out.println("Question to " + set[0] + ": " + question);
-            out.writeObject(question);
-            out.flush();
-
-        } catch (IOException e) {
-            System.out.println("Deu mal no teste1");
-            e.printStackTrace();
-        }
+        //Broadcast
+        for (Connection con : localNode.getConnectionHandler().getConnections().values())
+            con.send("Mensagem de Teste para: "+con.getSocket().getPort());
 
     }
 

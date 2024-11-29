@@ -48,12 +48,20 @@ public class NodeConnectionHandler {
     // Método para se ligar a outro nó
     public void connectToNode(String destAddress, int destPort) {
         try {
+            if(connections.containsKey(destPort))
+                throw new IllegalArgumentException("Conexão com "+destPort+" já existente!");
+
+            if(destPort==node.getPort())
+                throw new IllegalArgumentException("Impossivel connectar com o próprio nó!");
+
             Socket socket = new Socket(destAddress, destPort);
             socket.setKeepAlive(true);
             connections.put(destPort, new Connection(socket));
-            
+            System.out.println("Conexão estabelecida com: [" + destAddress + ":" + destPort + "]");
         } catch (IOException e) {
             System.err.println("Erro ao conectar-se ao nó [" + destAddress + ":" + destPort + "]");
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
         }
     }
 

@@ -28,13 +28,21 @@ public class Connection{
         }
     }
 
+    public void send(Object object){
+        try {
+            System.out.println("Object to " + socket.getPort() + ": " + object.getClass());
+            out.writeObject(object);
+            out.flush();
+        } catch (IOException e) {
+            System.err.println("Falha ao enviar -"+object.getClass()+"! Error: "+e.getMessage());
+        }
+    }
+
     private void listen() {
         try {
             while (true) {
                 // Ler objeto do stream de entrada
                 Object object = in.readObject();
-
-                System.out.println(Node.getNode());
 
                 // Verificar e tratar o objeto
                 if (object instanceof String) {
@@ -56,7 +64,6 @@ public class Connection{
             close(); // Fechar conexão em caso de erro
         }
     }
-
 
     //Tratar o FileBlockRequestMessage
     private void tratarFileBlockRequestMessage(FileBlockRequestMessage request){

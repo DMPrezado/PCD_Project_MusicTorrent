@@ -3,17 +3,19 @@ package GUI;
 import javax.swing.*;
 
 import Logic.Connection;
+import Logic.FileInfo;
+import Logic.FileSearch;
 import Logic.Node;
 
 import java.awt.*;
+import java.util.List;          
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
 public class IscTorrentGUI extends JFrame {
-    private JList<File> resultList;
+    private JList<String> resultList;
     private Node node;  // Campo para armazenar o nó local
-    private DefaultListModel<File> filesListModel = new DefaultListModel<>();
+    private JScrollPane jResultJScrollPane;
 
 
 
@@ -30,10 +32,6 @@ public class IscTorrentGUI extends JFrame {
 
         // Centraliza a janela no ecrã
         setLocationRelativeTo(null);
-
-        updateFileList();
-
-
         setVisible(true);
     }
 
@@ -49,22 +47,9 @@ public class IscTorrentGUI extends JFrame {
         add(searchPanel, BorderLayout.NORTH);
 
         // Lista de resultados vazia
-        resultList = new JList<>(filesListModel);
-        // Criar um renderizador de células para exibir apenas o nome do arquivo
-        resultList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            // Exibe o nome do arquivo usando value.getName()
-            JLabel label = new JLabel(value.getName());
-            if (isSelected) {
-                label.setBackground(list.getSelectionBackground());
-                label.setForeground(list.getSelectionForeground());
-            } else {
-                label.setBackground(list.getBackground());
-                label.setForeground(list.getForeground());
-            }
-            label.setOpaque(true);  // Necessário para mostrar a cor de fundo
-            return label;
-        });
-        add(new JScrollPane(resultList), BorderLayout.CENTER);
+        resultList = new JList<>();
+        jResultJScrollPane = new JScrollPane(resultList);
+        add(jResultJScrollPane, BorderLayout.CENTER);
 
 
         // Botões de ação
@@ -83,18 +68,10 @@ public class IscTorrentGUI extends JFrame {
             }
         });
 
-        //Interagir com ficheiros selecionados
-        // buttonDownload.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         System.out.println("Selected File: "+resultList.getSelectedValuesList());
-        //     }
-        // });
-
-        buttonDownload.addActionListener(new ActionListener() {
+        buttonSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                test1();
+                Node.getNode().getDownloadTasksManager().searchFiles(new FileSearch(searchField.getText().toLowerCase()));
             }
         });
     }
@@ -115,27 +92,24 @@ public class IscTorrentGUI extends JFrame {
         }
     }
 
-    // Ponto 2
     public void updateFileList() {
-        filesListModel.clear();
-
-        File[] files = node.getFileManager().getFiles();
-        for (File file : files) {
-            filesListModel.addElement(file); // Add each file or directory to the model
+        jResultJScrollPane.removeAll();
+        List<FileInfo> files = FileSearch.getResults();
+    
+        if (files == null || files.isEmpty()) {
+            System.out.println("Nenhum arquivo encontrado.");
+            return;
         }
-    }
-
-
-    //com connections
-    public void test1(){
-
-        //Vai buscar uma conecção qualquer só para o teste
-        // localNode.getConnectionHandler().getConnections().values().iterator().next().send("Mensagem de Teste1!!");
-
-        //Broadcast
-        for (Connection con : node.getConnectionHandler().getConnections().values())
-            con.send("Mensagem de Teste para: "+con.getSocket().getPort());
-
+    
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+    
+        for (FileInfo file : files) {
+            System.out.println("Arquivo encontrado: " + file.getName());
+            listModel.addElement(file.getName());
+        }
+    
+        resultList.setModel(listModel);
+        jResultJScrollPane.add(resultList);
     }
 
 }

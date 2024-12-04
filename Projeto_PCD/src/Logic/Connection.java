@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Connection{
     private Socket socket;
@@ -34,10 +36,12 @@ public class Connection{
             out.writeObject(object);
             out.flush();
         } catch (IOException e) {
-            System.err.println("Falha ao enviar -"+object.getClass()+"! Error: "+e.getMessage());
+            System.err.println("Falha ao enviar -"+object.getClass()+"! Error: \n"+e.getStackTrace().toString());
+            e.printStackTrace();
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void listen() {
         try {
             while (true) {
@@ -48,6 +52,19 @@ public class Connection{
                 if (object instanceof String) {
                     System.out.println("Mensagem recebida (String): " + object);
                     continue; // Passa para a próxima iteração
+                }
+
+                if (object instanceof FileSearch) {
+                    tratarFileSearch((FileSearch) object);
+                    continue;
+                }
+
+                if (object instanceof ArrayList) { // Verifica se é uma ArrayList genérica
+                    ArrayList<?> list = (ArrayList<?>) object;
+                    if (!list.isEmpty() && list.get(0) instanceof FileInfo) {
+                        tratarFileSearchResults(list);
+                    }
+                    continue;
                 }
 
                 if (object instanceof FileBlockRequestMessage) {
@@ -63,6 +80,16 @@ public class Connection{
             System.err.println("Erro durante a escuta de mensagens no socket: " + socket);
             close(); // Fechar conexão em caso de erro
         }
+    }
+
+    //Tratar o FileSearch
+    private void tratarFileSearch(FileSearch fileSearch){
+        List<FileInfo> matches = Node.getNode().getFileManager().getFileSearchResults(fileSearch);
+        send(matches);
+    }
+
+    private void tratarFileSearchResults(ArrayList<?> list){
+        FileSearch.addResults((ArrayList<FileInfo>) list);
     }
 
     //Tratar o FileBlockRequestMessage

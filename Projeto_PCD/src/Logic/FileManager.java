@@ -61,6 +61,28 @@ public class FileManager {
         return filesList;
     }
     
+    public List<FileInfo> getFileSearchResults(FileSearch search) {
+        String searchStr = search.getStr();
+        List<FileInfo> matchingFiles = new ArrayList<FileInfo>();
+    
+        for (File file : files) {
+            if (file.getName().toLowerCase().contains(searchStr.toLowerCase())) {
+                matchingFiles.add(new FileInfo(file.getName(), file.hashCode(), file.length()));
+            }
+        }
+
+        // Exibir os resultados
+        System.out.println("Resultados da pesquisa por: " + searchStr);
+        for (FileInfo fileInfo : matchingFiles) {
+            System.out.println("\tNome: " + fileInfo.getName());
+            System.out.println("\tTamanho: " + fileInfo.getLength() + " bytes");
+            System.out.println("\tHashCode: " + fileInfo.getHash());
+            System.out.println();
+        }
+
+        return matchingFiles;
+    }
+
     @Override
     public String toString() {
         String str = "";

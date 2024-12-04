@@ -9,12 +9,14 @@ public class Node {
     private NodeConnectionHandler connectionHandler;
     private FileManager fileManager;
     private IscTorrentGUI gui;
+    private DownloadTasksManager downloadTasksManager;
 
     public Node(String address, int port, String folderPath) {
         this.address = address;
         this.port = port;
         this.fileManager = new FileManager(folderPath); 
         this.connectionHandler= new NodeConnectionHandler(this);
+        this.downloadTasksManager= new DownloadTasksManager(this);
         node = this;
 
         System.out.println("Nó iniciado:\t [" + address + ":" + port+"]");
@@ -34,11 +36,12 @@ public class Node {
     }
 
     // Getters
-    public String getAddress() {return address;}
-    public int getPort() {return port;}
-    public FileManager getFileManager() {return fileManager;}
-    public NodeConnectionHandler getConnectionHandler() {return connectionHandler;}
-    public IscTorrentGUI getGui() {return gui;}
+    public String                   getAddress() {return address;}
+    public int                      getPort() {return port;}
+    public FileManager              getFileManager() {return fileManager;}
+    public NodeConnectionHandler    getConnectionHandler() {return connectionHandler;}
+    public IscTorrentGUI            getGui() {return gui;}
+    public DownloadTasksManager     getDownloadTasksManager() {return downloadTasksManager; }
 
     public static Node getNode() {return node;}
 }

@@ -61,7 +61,7 @@ public class FileManager {
         return filesList;
     }
     
-    public List<FileInfo> getFileSearchResults(FileSearch search) {
+    public List<FileInfo> getFileSearchResults(FileSearchManager search) {
         String searchStr = search.getStr();
         List<FileInfo> matchingFiles = new ArrayList<FileInfo>();
     
@@ -93,4 +93,17 @@ public class FileManager {
         }
         return str;
     }
+
+    public List<FileInfo> searchFiles(String searchStr) {
+        List<FileInfo> matchingFiles = new ArrayList<>();
+    
+        for (File file : files) {
+            if (file.getName().toLowerCase().contains(searchStr.toLowerCase())) {
+                matchingFiles.add(new FileInfo(file.getName(), file.length()));
+            }
+        }
+    
+        return matchingFiles;
+    }
+    
 }

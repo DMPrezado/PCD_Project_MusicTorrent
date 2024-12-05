@@ -19,11 +19,10 @@ public class IscTorrentGUI extends JFrame {
 
 
 
-    public IscTorrentGUI(Node node) {
-        this.node = node;
+    public IscTorrentGUI() {
 
         //Configurações da Janela
-        setTitle("IscTorrent " + node.getPort());
+        setTitle("IscTorrent " + Node.getPort());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Gerenciar o comportamento de fechamento
         setSize(600, 350);
         setLayout(new BorderLayout());
@@ -71,7 +70,8 @@ public class IscTorrentGUI extends JFrame {
         buttonSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Node.getNode().getDownloadTasksManager().searchFiles(new FileSearch(searchField.getText().toLowerCase()));
+                //Botão Search Tratar
+                tratarSearchButton(searchField.getText());
             }
         });
     }
@@ -87,29 +87,38 @@ public class IscTorrentGUI extends JFrame {
             int port = Integer.parseInt(txtPort.getText());
             
             // Conectar ao nó especificado
-            node.connectTo(address, port);
+            Node.connectTo(address, port);
            
         }
     }
 
     public void updateFileList() {
-        jResultJScrollPane.removeAll();
-        List<FileInfo> files = FileSearch.getResults();
+        // Obtém o HashMap de arquivos e suas contagens
+        var fileInfoCountMap = Node.getFileSearchManager().getFileInfoCountHashMap();
     
-        if (files == null || files.isEmpty()) {
-            System.out.println("Nenhum arquivo encontrado.");
-            return;
+        if (fileInfoCountMap != null && !fileInfoCountMap.isEmpty()) {
+            // Cria um modelo para a lista de resultados
+            DefaultListModel<String> listModel = new DefaultListModel<>();
+            
+            for (FileInfo fileInfo : fileInfoCountMap.keySet()) {
+                int count = fileInfoCountMap.get(fileInfo);
+                String displayText = String.format("%s <%d>", fileInfo.getName(), count);
+                listModel.addElement(displayText);
+            }
+    
+            // Atualiza a JList com os resultados
+            resultList.setModel(listModel);
+        } else {
+            // Caso não haja resultados, limpa a lista e exibe mensagem
+            resultList.setModel(new DefaultListModel<>());
+            JOptionPane.showMessageDialog(this, "Nenhum resultado encontrado.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
     
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-    
-        for (FileInfo file : files) {
-            System.out.println("Arquivo encontrado: " + file.getName());
-            listModel.addElement(file.getName());
-        }
-    
-        resultList.setModel(listModel);
-        jResultJScrollPane.add(resultList);
+
+    //Tratar Search Button
+    public void tratarSearchButton(String str){
+        Node.getFileSearchManager().sendSearchRequest(str);
     }
 
 }

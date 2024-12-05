@@ -3,21 +3,21 @@ package Logic;
 import GUI.IscTorrentGUI;
 
 public class Node {
-    private static Node node;
-    private String address;
-    private int port;
-    private NodeConnectionHandler connectionHandler;
-    private FileManager fileManager;
-    private IscTorrentGUI gui;
-    private DownloadTasksManager downloadTasksManager;
+    private static String address;
+    private static int port;
+    private static NodeConnectionHandler connectionHandler;
+    private static FileManager fileManager;
+    private static IscTorrentGUI gui;
+    private static DownloadTasksManager downloadTasksManager;
+    private static FileSearchManager fileSearchManager;
 
     public Node(String address, int port, String folderPath) {
-        this.address = address;
-        this.port = port;
-        this.fileManager = new FileManager(folderPath); 
-        this.connectionHandler= new NodeConnectionHandler(this);
-        this.downloadTasksManager= new DownloadTasksManager(this);
-        node = this;
+        Node.address = address;
+        Node.port = port;
+        Node.fileManager = new FileManager(folderPath); 
+        Node.connectionHandler= new NodeConnectionHandler(this);
+        Node.downloadTasksManager= new DownloadTasksManager(this);
+        Node.fileSearchManager= new FileSearchManager();
 
         System.out.println("Nó iniciado:\t [" + address + ":" + port+"]");
         connectionHandler.startServer();
@@ -26,22 +26,21 @@ public class Node {
     }
 
     // Método para conectar a outro nó
-    public void connectTo(String remoteAddress, int remotePort) {
+    public static void connectTo(String remoteAddress, int remotePort) {
         connectionHandler.connectToNode(remoteAddress, remotePort);
     }
 
     //Iniciar a GUI
-    public void startGUI(){
-        gui = new IscTorrentGUI(this);
+    public static void startGUI(){
+        Node.gui = new IscTorrentGUI();
     }
 
     // Getters
-    public String                   getAddress() {return address;}
-    public int                      getPort() {return port;}
-    public FileManager              getFileManager() {return fileManager;}
-    public NodeConnectionHandler    getConnectionHandler() {return connectionHandler;}
-    public IscTorrentGUI            getGui() {return gui;}
-    public DownloadTasksManager     getDownloadTasksManager() {return downloadTasksManager; }
-
-    public static Node getNode() {return node;}
+    public static String                   getAddress() {return address;}
+    public static int                      getPort() {return port;}
+    public static FileManager              getFileManager() {return fileManager;}
+    public static NodeConnectionHandler    getConnectionHandler() {return connectionHandler;}
+    public static IscTorrentGUI            getGui() {return gui;}
+    public static DownloadTasksManager     getDownloadTasksManager() {return downloadTasksManager;}
+    public static FileSearchManager        getFileSearchManager(){return fileSearchManager;}
 }

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Connection{
     private Socket socket;
@@ -41,7 +39,6 @@ public class Connection{
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void listen() {
         try {
             while (true) {
@@ -54,50 +51,39 @@ public class Connection{
                     continue; // Passa para a próxima iteração
                 }
 
-                if (object instanceof FileSearch) {
-                    tratarFileSearch((FileSearch) object);
+                if (object instanceof SearchRequest) {
+                    tratarSearchRequest((SearchRequest) object);
                     continue;
                 }
 
-                if (object instanceof ArrayList) { // Verifica se é uma ArrayList genérica
-                    ArrayList<?> list = (ArrayList<?>) object;
-                    if (!list.isEmpty() && list.get(0) instanceof FileInfo) {
-                        tratarFileSearchResults(list);
-                    }
+                if (object instanceof SearchResult) {
+                    tratarSearchResult((SearchResult) object);
                     continue;
                 }
 
-                if (object instanceof FileBlockRequestMessage) {
-                    FileBlockRequestMessage request = (FileBlockRequestMessage) object; // Fazer o cast para o tipo específico
-                    tratarFileBlockRequestMessage(request); // Chamar método para lidar com a banana
-                    continue; // Passa para a próxima iteração
-                }
+                
 
                 // Tratamento de objetos desconhecidos
                 System.out.println("Objeto desconhecido recebido: " + object.getClass());
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Erro durante a escuta de mensagens no socket: " + socket);
+            e.printStackTrace();
             close(); // Fechar conexão em caso de erro
         }
     }
 
-    //Tratar o FileSearch
-    private void tratarFileSearch(FileSearch fileSearch){
-        List<FileInfo> matches = Node.getNode().getFileManager().getFileSearchResults(fileSearch);
-        send(matches);
+    private void tratarSearchRequest(SearchRequest searchRequest){
+        send(new SearchResult(Node.getFileManager().searchFiles(searchRequest.getStr())));
     }
 
-    private void tratarFileSearchResults(ArrayList<?> list){
-        FileSearch.addResults((ArrayList<FileInfo>) list);
+    private void tratarSearchResult(SearchResult object){
+        Node.getFileSearchManager().receiveSearchResults(getSocket().getPort(),object);
     }
 
-    //Tratar o FileBlockRequestMessage
-    private void tratarFileBlockRequestMessage(FileBlockRequestMessage request){
-        System.out.println("chegou ao tratarFileBlockRequestMessage");
 
-        Node.getNode();
-    }
+
+
 
     // Método para fechar o socket e streams
     public void close() {
@@ -105,7 +91,7 @@ public class Connection{
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();
-            Node.getNode().getConnectionHandler().getConnections().remove(socket.getPort());
+            Node.getConnectionHandler().getConnections().remove(socket.getPort());
             System.out.println("Conexão fechada: " + socket);
         } catch (IOException e) {
             System.err.println("Erro ao fechar conexão: " + socket);

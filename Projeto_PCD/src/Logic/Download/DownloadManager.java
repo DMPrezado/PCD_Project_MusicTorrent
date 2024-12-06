@@ -21,7 +21,7 @@ import Logic.Utils.FileInfo;
 import Logic.Utils.Tuplo;
 
 public class DownloadManager {
-    private static final int THREAD_POOL_SIZE = 10;
+    private static final int THREAD_POOL_SIZE = 5;
     private static HashMap<FileInfo, List<ChunkResult> > receivedChunks = new HashMap<>();
     private Lock lock =new ReentrantLock ();
     private static HashMap<FileInfo,Long> tempos;
@@ -104,9 +104,8 @@ public class DownloadManager {
             System.out.printf("AVISO: O ficheiro '%s' foi completamente recebido!%n", fileInfo.getName());
             try {
                 FileManager.juntarChunks(receivedChunks);
-            } catch (FileNotFoundException e) {
             } catch (IOException e) {
-            }
+            } 
         }
     }
 

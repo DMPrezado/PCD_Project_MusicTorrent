@@ -3,6 +3,7 @@ package GUI;
 import javax.swing.*;
 
 import Logic.Node;
+import Logic.Download.DownloadManager;
 import Logic.Search.FileSearchManager;
 import Logic.Utils.FileInfo;
 
@@ -132,7 +133,7 @@ public class IscTorrentGUI extends JFrame {
     
     private void tratarButtonDownload() {
 
-        Node.getDownloadManager().clearReceivedChunks();
+        DownloadManager.clearReceivedChunks();
         // Obter as seleções da lista de resultados
         List<String> selectedValues = resultList.getSelectedValuesList();
 
@@ -140,6 +141,6 @@ public class IscTorrentGUI extends JFrame {
             Node.getDownloadManager().requestFiles(selectedValues);
             return;
         } 
-        System.out.println("Nenhum ficheiro selecionado para download.");
+        JOptionPane.showMessageDialog(this, "Nenhum ficheiro selecionado para download.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
     }
 }

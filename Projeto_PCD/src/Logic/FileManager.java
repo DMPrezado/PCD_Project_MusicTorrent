@@ -14,7 +14,6 @@ import java.util.List;
 import Logic.Download.ChunkRequest;
 import Logic.Download.ChunkResult;
 import Logic.Download.DownloadManager;
-import Logic.Search.FileSearchManager;
 import Logic.Utils.FileInfo;
 
 // Ponto 2
@@ -75,27 +74,6 @@ public class FileManager {
                 filesList.add(file);
             return filesList;
         }
-        
-        public List<FileInfo> getFileSearchResults(FileSearchManager search) {
-            String searchStr = search.getSearchString();
-            List<FileInfo> matchingFiles = new ArrayList<FileInfo>();
-        
-            for (File file : files) {
-                if (file.getName().toLowerCase().contains(searchStr.toLowerCase())) {
-                    matchingFiles.add(new FileInfo(file.getName(), file.length()));
-                }
-            }
-    
-            // Exibir os resultados
-            System.out.println("Resultados da pesquisa por: " + searchStr);
-            for (FileInfo fileInfo : matchingFiles) {
-                System.out.println("\tNome: " + fileInfo.getName());
-                System.out.println("\tTamanho: " + fileInfo.getLength() + " bytes");
-                System.out.println();
-            }
-    
-            return matchingFiles;
-        }
     
         @Override
         public String toString() {
@@ -151,23 +129,23 @@ public class FileManager {
         }
         //
         public static ChunkResult getChunk(File file, int offset, ChunkRequest chunkRequest) throws FileNotFoundException, IOException  {
-                try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-                    raf.seek(offset); // Mover para o offset especificado
-        
-                    // Lê o chunk
-                    byte[] buffer = new byte[ChunkRequest.CHUNK_MAX_SIZE];
-                    int bytesRead = raf.read(buffer);
-        
-                    // Se não leu nada, lança uma exceção
-                    if (bytesRead == -1) {
-                        throw new IOException("Offset fora do alcance do ficheiro.");
-                    }
-        
-                    // Ajustar o tamanho do buffer para o tamanho real dos dados lidos
-                    byte[] actualChunk = (bytesRead < ChunkRequest.CHUNK_MAX_SIZE) ? java.util.Arrays.copyOf(buffer, bytesRead) : buffer;
-        
-                    // Retornar o resultado
-                    return new ChunkResult(actualChunk,offset,chunkRequest.getFileInfo(),Node.getPort());
+            try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+                raf.seek(offset); // Mover para o offset especificado
+    
+                // Lê o chunk
+                byte[] buffer = new byte[ChunkRequest.CHUNK_MAX_SIZE];
+                int bytesRead = raf.read(buffer);
+    
+                // Se não leu nada, lança uma exceção
+                if (bytesRead == -1) {
+                    throw new IOException("Offset fora do alcance do ficheiro.");
+                }
+    
+                // Ajustar o tamanho do buffer para o tamanho real dos dados lidos
+                byte[] actualChunk = (bytesRead < ChunkRequest.CHUNK_MAX_SIZE) ? java.util.Arrays.copyOf(buffer, bytesRead) : buffer;
+    
+                // Retornar o resultado
+                return new ChunkResult(actualChunk,offset,chunkRequest.getFileInfo(),Node.getPort());
             }
         }
     
@@ -179,17 +157,17 @@ public class FileManager {
             List<ChunkResult> chunks = fileChunks.get(fileInfo);
             Collections.sort(chunks);
 
-            long inicio = DownloadManager.getTempos().get(fileInfo);
-            long fim;
-
             try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
                 for (ChunkResult chunk : chunks) {
                     // Escreve os dados do chunk no arquivo
                     outputStream.write(chunk.getChunkData());
                 }
-                fim = System.currentTimeMillis();
             }
 
+
+            //para Calculo dos tempos
+            long inicio = DownloadManager.getTempos().get(fileInfo);
+            long fim = System.currentTimeMillis();
             DownloadManager.setTotalTime(fileInfo, Math.abs(inicio - fim));
             System.out.printf("Arquivo foi reconstruído com sucesso em %d ms: %s%n",DownloadManager.getTempos().get(fileInfo), filePath);
         }

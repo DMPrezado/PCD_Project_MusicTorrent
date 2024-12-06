@@ -2,15 +2,15 @@ package GUI;
 
 import javax.swing.*;
 
-import Logic.Connection;
-import Logic.FileInfo;
-import Logic.FileSearch;
 import Logic.Node;
+import Logic.Search.FileSearchManager;
+import Logic.Utils.FileInfo;
 
-import java.awt.*;
-import java.util.List;          
+import java.awt.*;        
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.List;
 
 public class IscTorrentGUI extends JFrame {
     private JList<String> resultList;
@@ -74,6 +74,14 @@ public class IscTorrentGUI extends JFrame {
                 tratarSearchButton(searchField.getText());
             }
         });
+
+        buttonDownload.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Botão Search Tratar
+                tratarButtonDownload();
+            }
+        });
     }
 
     private void openConnectionDialog() {
@@ -93,8 +101,9 @@ public class IscTorrentGUI extends JFrame {
     }
 
     public void updateFileList() {
+        Node.getFileSearchManager();
         // Obtém o HashMap de arquivos e suas contagens
-        var fileInfoCountMap = Node.getFileSearchManager().getFileInfoCountHashMap();
+        HashMap<FileInfo,Integer> fileInfoCountMap = FileSearchManager.getFileInfoCountHashMap();
     
         if (fileInfoCountMap != null && !fileInfoCountMap.isEmpty()) {
             // Cria um modelo para a lista de resultados

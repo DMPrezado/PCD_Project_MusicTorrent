@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Logic.Search.SearchRequest;
+import Logic.Search.SearchResult;
+
 public class Connection{
     private Socket socket;
     private ObjectOutputStream out;
@@ -61,8 +64,6 @@ public class Connection{
                     continue;
                 }
 
-                
-
                 // Tratamento de objetos desconhecidos
                 System.out.println("Objeto desconhecido recebido: " + object.getClass());
             }
@@ -80,9 +81,6 @@ public class Connection{
     private void tratarSearchResult(SearchResult object){
         Node.getFileSearchManager().receiveSearchResults(getSocket().getPort(),object);
     }
-
-
-
 
 
     // Método para fechar o socket e streams

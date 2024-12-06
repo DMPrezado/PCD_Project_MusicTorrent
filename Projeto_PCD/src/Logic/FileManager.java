@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import Logic.Search.FileSearchManager;
+import Logic.Utils.FileInfo;
+
 // Ponto 2
 public class FileManager {
     private String folderPath;
@@ -51,6 +54,7 @@ public class FileManager {
     }
 
     public File[] getFiles() {
+        loadNodeFiles();
         return files;
     }
 
@@ -62,12 +66,12 @@ public class FileManager {
     }
     
     public List<FileInfo> getFileSearchResults(FileSearchManager search) {
-        String searchStr = search.getStr();
+        String searchStr = search.getSearchString();
         List<FileInfo> matchingFiles = new ArrayList<FileInfo>();
     
         for (File file : files) {
             if (file.getName().toLowerCase().contains(searchStr.toLowerCase())) {
-                matchingFiles.add(new FileInfo(file.getName(), file.hashCode(), file.length()));
+                matchingFiles.add(new FileInfo(file.getName(), file.length()));
             }
         }
 
@@ -76,7 +80,6 @@ public class FileManager {
         for (FileInfo fileInfo : matchingFiles) {
             System.out.println("\tNome: " + fileInfo.getName());
             System.out.println("\tTamanho: " + fileInfo.getLength() + " bytes");
-            System.out.println("\tHashCode: " + fileInfo.getHash());
             System.out.println();
         }
 
@@ -96,14 +99,22 @@ public class FileManager {
 
     public List<FileInfo> searchFiles(String searchStr) {
         List<FileInfo> matchingFiles = new ArrayList<>();
-    
+
+        if (files == null || files.length == 0 || searchStr == null || searchStr.trim().isEmpty()) {
+            return matchingFiles; // Retorna vazio se não houver arquivos ou string de busca inválida
+        }
+
+        String normalizedSearchStr = searchStr.trim().toLowerCase();
+
+        File[] ficheiros = getFiles();
         for (File file : files) {
-            if (file.getName().toLowerCase().contains(searchStr.toLowerCase())) {
+            if (file.isFile() && file.getName().toLowerCase().contains(normalizedSearchStr)) {
                 matchingFiles.add(new FileInfo(file.getName(), file.length()));
             }
         }
-    
+
         return matchingFiles;
     }
+
     
 }

@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Logic.Download.ChunkRequest;
+import Logic.Download.ChunkResult;
 import Logic.Search.SearchRequest;
 import Logic.Search.SearchResult;
 
@@ -32,13 +34,14 @@ public class Connection{
     }
 
     public void send(Object object) {
+        if (socket.isClosed())
+            return;
         try {
             System.out.println("Object to " + socket.getPort() + ": " + object.getClass());
             out.writeObject(object);
             out.flush();
         } catch (IOException e) {
-            System.err.println("Falha ao enviar -"+object.getClass()+"! Error: \n"+e.getStackTrace().toString());
-            e.printStackTrace();
+            System.err.println("Falha ao enviar -"+object.getClass()+"!");
         }
     }
 
@@ -64,6 +67,17 @@ public class Connection{
                     continue;
                 }
 
+                if (object instanceof ChunkRequest) {
+                    tratarChunkRequest((ChunkRequest)object);
+                    continue;
+                }
+
+                if (object instanceof ChunkResult) {
+                    tratarChunkResult((ChunkResult)object);
+                    continue;
+                }
+
+
                 // Tratamento de objetos desconhecidos
                 System.out.println("Objeto desconhecido recebido: " + object.getClass());
             }
@@ -82,6 +96,20 @@ public class Connection{
         Node.getFileSearchManager().receiveSearchResults(getSocket().getPort(),object);
     }
 
+    private void tratarChunkRequest(ChunkRequest object){
+        send(Node.getFileManager().createChunkResult(object));
+    }
+
+    private void tratarChunkResult(ChunkResult chunkResult){
+        Node.getDownloadManager().receberChunkResult(chunkResult);
+    }
+
+
+
+
+
+
+
 
     // Método para fechar o socket e streams
     public void close() {
@@ -96,6 +124,12 @@ public class Connection{
         }
     }
 
+
+
+
+
+
+    //Getters
     public Socket getSocket() {return socket;}
     public ObjectOutputStream getOut() {return out;}
     public ObjectInputStream getIn() {return in;}

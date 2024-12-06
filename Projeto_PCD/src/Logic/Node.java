@@ -19,9 +19,9 @@ public class Node {
         //lida com a pasta e com os ficheiros
         Node.fileManager = new FileManager(folderPath); 
         //para as conecções 
-        Node.connectionHandler= new NodeConnectionHandler(this);
+        Node.connectionHandler= new NodeConnectionHandler();
         //orienta os downloads
-        Node.downloadManager= new DownloadManager(this);
+        Node.downloadManager= new DownloadManager();
         //orienta as pesquisas
         Node.fileSearchManager= new FileSearchManager();
 

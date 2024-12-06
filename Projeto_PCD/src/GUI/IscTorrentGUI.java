@@ -129,5 +129,17 @@ public class IscTorrentGUI extends JFrame {
     public void tratarSearchButton(String str){
         Node.getFileSearchManager().sendSearchRequest(str);
     }
+    
+    private void tratarButtonDownload() {
 
+        Node.getDownloadManager().clearReceivedChunks();
+        // Obter as seleções da lista de resultados
+        List<String> selectedValues = resultList.getSelectedValuesList();
+
+        if (!selectedValues.isEmpty()) {
+            Node.getDownloadManager().requestFiles(selectedValues);
+            return;
+        } 
+        System.out.println("Nenhum ficheiro selecionado para download.");
+    }
 }

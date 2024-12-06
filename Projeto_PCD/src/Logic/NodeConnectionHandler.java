@@ -9,13 +9,9 @@ import java.util.Map;
 public class NodeConnectionHandler {
     private Node node;
     private ServerSocket serverSocket;
-    private static Map<Integer, Connection> connections;
+    private static Map<Integer, Connection> connections= new HashMap<>();
 
-    public NodeConnectionHandler(Node node) {
-        this.node = node;
-        connections = new HashMap<>();
-    }
-
+    
     // Método para iniciar o servidor e aceitar conexões
     public void startServer() {
         try {
@@ -75,5 +71,9 @@ public class NodeConnectionHandler {
 
     public static void closeConnection(int key){
         connections.remove(key);
+    }
+
+    public Connection getConnection(int port) {
+        return connections.get(port);
     }
 }

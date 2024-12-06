@@ -27,4 +27,6 @@ public class FileInfo implements Serializable{
         return name.hashCode();
     }
 
+    
+
 }

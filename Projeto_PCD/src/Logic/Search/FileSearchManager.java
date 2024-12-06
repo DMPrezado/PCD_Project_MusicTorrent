@@ -18,7 +18,7 @@ public class FileSearchManager{
     private static HashMap<FileInfo,Integer> fileInfoCountHashMap = new HashMap<>();;
 
     public void sendSearchRequest(String str){
-        setSearchString(str);
+        searchString=str;
         for (Connection connection : Node.getConnectionHandler().getConnections().values()) {
             connection.send(new SearchRequest(searchString));
         }
@@ -61,12 +61,6 @@ public class FileSearchManager{
     public String getSearchString(){return searchString;}
     public static HashMap<FileInfo,Integer> getFileInfoCountHashMap(){return fileInfoCountHashMap;}
     public static List<Tuplo<Integer, FileInfo>> getPortFileInfoList(){return portFileInfoList;}
-
-
-    //Setters
-    public void setSearchString(String str){
-        this.searchString=str;
-    }
 
 
 

@@ -179,7 +179,7 @@ public class FileManager {
             List<ChunkResult> chunks = fileChunks.get(fileInfo);
             Collections.sort(chunks);
 
-            long inicio = DownloadManager.tempos.get(fileInfo);
+            long inicio = DownloadManager.getTempos().get(fileInfo);
             long fim;
 
             try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
@@ -190,8 +190,8 @@ public class FileManager {
                 fim = System.currentTimeMillis();
             }
 
-            long time = Math.abs(inicio - fim);
-            System.out.printf("Arquivo foi reconstruído com sucesso em %d ms: %s%n", time, filePath);
+            DownloadManager.setTotalTime(fileInfo, Math.abs(inicio - fim));
+            System.out.printf("Arquivo foi reconstruído com sucesso em %d ms: %s%n",DownloadManager.getTempos().get(fileInfo), filePath);
         }
     }
 }

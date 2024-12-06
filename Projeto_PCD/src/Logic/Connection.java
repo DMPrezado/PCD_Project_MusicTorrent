@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import Logic.Download.ChunkRequest;
 import Logic.Download.ChunkResult;
+import Logic.Download.DownloadManager;
 import Logic.Search.SearchRequest;
 import Logic.Search.SearchResult;
 
@@ -101,7 +102,7 @@ public class Connection{
     }
 
     private void tratarChunkResult(ChunkResult chunkResult){
-        Node.getDownloadManager().receberChunkResult(chunkResult);
+        DownloadManager.receberChunkResult(chunkResult);
     }
 
 

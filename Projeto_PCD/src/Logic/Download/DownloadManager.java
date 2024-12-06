@@ -24,11 +24,19 @@ public class DownloadManager {
     private static final int THREAD_POOL_SIZE = 10;
     private static HashMap<FileInfo, List<ChunkResult> > receivedChunks = new HashMap<>();
     private Lock lock =new ReentrantLock ();
-    public static HashMap<FileInfo,Long> tempos;
+    private static HashMap<FileInfo,Long> tempos;
 
     public static void clearReceivedChunks(){
         receivedChunks = new HashMap<>();
         tempos = new HashMap<>();
+    }
+
+    public static void setTotalTime(FileInfo fileInfo, long time){
+        tempos.put(fileInfo, time);
+    }
+
+    public static HashMap<FileInfo, Long> getTempos() {
+        return tempos;
     }
 
     public void requestFiles(List<String> selectedFiles){

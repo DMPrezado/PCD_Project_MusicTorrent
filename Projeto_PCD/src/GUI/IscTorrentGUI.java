@@ -6,12 +6,14 @@ import Logic.Node;
 import Logic.Download.DownloadManager;
 import Logic.Search.FileSearchManager;
 import Logic.Utils.FileInfo;
+import Logic.Utils.Tuplo;
 
 import java.awt.*;        
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IscTorrentGUI extends JFrame {
     private JList<String> resultList;
@@ -81,6 +83,7 @@ public class IscTorrentGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 //Botão Search Tratar
                 tratarButtonDownload();
+                mostrarDetalhesDownload();
             }
         });
     }
@@ -126,11 +129,12 @@ public class IscTorrentGUI extends JFrame {
     }
     
 
-    //Tratar Search Button
+    // Tratar Search Button
     public void tratarSearchButton(String str){
         Node.getFileSearchManager().sendSearchRequest(str);
     }
     
+    // Tratar Download Button
     private void tratarButtonDownload() {
 
         DownloadManager.clearReceivedChunks();
@@ -143,4 +147,40 @@ public class IscTorrentGUI extends JFrame {
         } 
         JOptionPane.showMessageDialog(this, "Nenhum ficheiro selecionado para download.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    // Mostrar detalhes download
+    private void mostrarDetalhesDownload() {
+        // Obter os tempos de download e os fornecedores
+        HashMap<FileInfo, Long> tempos = DownloadManager.getTempos();
+
+        if (tempos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nenhum ficheiro foi descarregado.", "Informação", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        StringBuilder mensagem = new StringBuilder();
+        mensagem.append("Download completo.\n");
+
+        // Iterar pelos tempos e construir a mensagem
+        for (Map.Entry<FileInfo, Long> entry : tempos.entrySet()) {
+            FileInfo fileInfo = entry.getKey();
+            long tempoTotal = entry.getValue() / 1000;    // não estou a conseguir ter o tempo que está no system.out
+
+            mensagem.append(String.format("Ficheiro: %s\n", fileInfo.getName()));
+
+            // Obter os fornecedores associados ao ficheiro
+            List<Tuplo<Integer, FileInfo>> fornecedores = FileSearchManager.getPortFileInfoList();
+            for (Tuplo<Integer, FileInfo> fornecedor : fornecedores) {
+                if (fornecedor.getSegundo().equals(fileInfo)) {
+                    // tbm n estou a conseguir ir buscar o porto certo, nem o endereço. Aqui está hard coded mas é pra mudar
+                    mensagem.append(String.format("Fornecedor [endereco=/127.0.0.1, porto=%d]; \n", fornecedor.getPrimeiro()));
+                }
+            }
+            mensagem.append(String.format("Tempo decorrido: %ds\n", tempoTotal));
+        }
+
+        // Exibir mensagem em um JOptionPane
+        JOptionPane.showMessageDialog(this, mensagem.toString(), "Detalhes do Download", JOptionPane.INFORMATION_MESSAGE);
+    }    
+
 }

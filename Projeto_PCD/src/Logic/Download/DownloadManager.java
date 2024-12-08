@@ -216,4 +216,6 @@ public class DownloadManager {
             System.err.printf("Erro ao enviar ChunkRequests para o porto %d: %s%n\n", port, e.getMessage());
         }
     }
+
+    
 }

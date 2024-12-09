@@ -31,6 +31,10 @@ public class DownloadManager {
         tempos = new HashMap<>();
     }
 
+    public static List<ChunkResult> getReceivedFileInfoChunks(FileInfo fileInfo) {
+        return receivedChunks.get(fileInfo);
+    }
+
     public static void setTotalTime(FileInfo fileInfo, long time){
         tempos.put(fileInfo, time);
     }

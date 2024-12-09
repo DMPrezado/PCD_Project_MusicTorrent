@@ -170,6 +170,8 @@ public class FileManager {
             long fim = System.currentTimeMillis();
             DownloadManager.setTotalTime(fileInfo, Math.abs(inicio - fim));
             System.out.printf("Arquivo foi reconstruído com sucesso em %d ms: %s%n",DownloadManager.getTempos().get(fileInfo), filePath);
+
+            Node.getGui().mostrarDetalhesDownload();
         }
     }
 }

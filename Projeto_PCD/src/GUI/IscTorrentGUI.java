@@ -83,7 +83,6 @@ public class IscTorrentGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 //Botão Search Tratar
                 tratarButtonDownload();
-                mostrarDetalhesDownload();
             }
         });
     }
@@ -149,7 +148,7 @@ public class IscTorrentGUI extends JFrame {
     }
 
     // Mostrar detalhes download
-    private void mostrarDetalhesDownload() {
+    public void mostrarDetalhesDownload() {
         // Obter os tempos de download e os fornecedores
         HashMap<FileInfo, Long> tempos = DownloadManager.getTempos();
 
@@ -164,7 +163,7 @@ public class IscTorrentGUI extends JFrame {
         // Iterar pelos tempos e construir a mensagem
         for (Map.Entry<FileInfo, Long> entry : tempos.entrySet()) {
             FileInfo fileInfo = entry.getKey();
-            long tempoTotal = entry.getValue() / 1000;    // não estou a conseguir ter o tempo que está no system.out
+            long tempoTotal = entry.getValue();    // não estou a conseguir ter o tempo que está no system.out
 
             mensagem.append(String.format("Ficheiro: %s\n", fileInfo.getName()));
 
@@ -173,10 +172,10 @@ public class IscTorrentGUI extends JFrame {
             for (Tuplo<Integer, FileInfo> fornecedor : fornecedores) {
                 if (fornecedor.getSegundo().equals(fileInfo)) {
                     // tbm n estou a conseguir ir buscar o porto certo, nem o endereço. Aqui está hard coded mas é pra mudar
-                    mensagem.append(String.format("Fornecedor [endereco=/127.0.0.1, porto=%d]; \n", fornecedor.getPrimeiro()));
+                    mensagem.append(String.format("Fornecedor [endereco=/127.0.0.1, porto=%d]: %d \n", fornecedor.getPrimeiro(),DownloadManager.getReceivedFileInfoChunks(fileInfo).size()));
                 }
             }
-            mensagem.append(String.format("Tempo decorrido: %ds\n", tempoTotal));
+            mensagem.append(String.format("Tempo decorrido: %dms\n", tempoTotal));
         }
 
         // Exibir mensagem em um JOptionPane

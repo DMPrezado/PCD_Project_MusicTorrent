@@ -17,7 +17,6 @@ import java.util.Map;
 
 public class IscTorrentGUI extends JFrame {
     private JList<String> resultList;
-    private Node node;  // Campo para armazenar o nó local
     private JScrollPane jResultJScrollPane;
 
 

@@ -7,7 +7,6 @@ import java.util.Map;
 
 
 public class NodeConnectionHandler {
-    private Node node;
     private ServerSocket serverSocket;
     private static Map<Integer, Connection> connections= new HashMap<>();
 
@@ -15,8 +14,8 @@ public class NodeConnectionHandler {
     // Método para iniciar o servidor e aceitar conexões
     public void startServer() {
         try {
-            serverSocket = new ServerSocket(node.getPort());
-            System.out.println("ServerSocket iniciado no porto: " + node.getPort());
+            serverSocket = new ServerSocket(Node.getPort());
+            System.out.println("ServerSocket iniciado no porto: " + Node.getPort());
 
             // Thread para lidar com conexões de entrada
             new Thread(() -> {
@@ -52,7 +51,7 @@ public class NodeConnectionHandler {
             if(connections.containsKey(destPort))
                 throw new IllegalArgumentException("Conexão com "+destPort+" já existente!");
 
-            if(destPort==node.getPort())
+            if(destPort==Node.getPort())
                 throw new IllegalArgumentException("Impossivel connectar com o próprio nó!");
 
             Socket socket = new Socket(destAddress, destPort);

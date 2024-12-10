@@ -54,6 +54,11 @@ public class Connection{
 
                 // Verificar e tratar o objeto
                 if (object instanceof String) {
+                    if((String)object=="Z"){
+                        close();
+                        continue;
+                    }
+
                     System.out.println("Mensagem recebida (String): " + object);
                     continue; // Passa para a próxima iteração
                 }

@@ -23,6 +23,7 @@ import Logic.Utils.Tuplo;
 public class DownloadManager {
     private static final int THREAD_POOL_SIZE = 5;
     private static HashMap<FileInfo, List<ChunkResult> > receivedChunks = new HashMap<>();
+    private static HashMap<FileInfo, List<Integer>>fileInfoPorts = new HashMap<>(); 
     private Lock lock =new ReentrantLock ();
     private static HashMap<FileInfo,Long> tempos;
 
@@ -41,6 +42,10 @@ public class DownloadManager {
 
     public static HashMap<FileInfo, Long> getTempos() {
         return tempos;
+    }
+
+    public static HashMap<FileInfo, List<Integer>> getFileInfoPorts() {
+        return fileInfoPorts;
     }
 
     public void requestFiles(List<String> selectedFiles){
@@ -102,6 +107,11 @@ public class DownloadManager {
         FileInfo fileInfo = chunkResult.getFileInfo();
         receivedChunks.putIfAbsent(fileInfo, new ArrayList<>());
         receivedChunks.get(fileInfo).add(chunkResult);
+
+        // Adiciona o porto à lista no mapa fileInfoPorts
+        int port = chunkResult.getPortFornecedor();
+        fileInfoPorts.putIfAbsent(fileInfo, new ArrayList<>());
+        fileInfoPorts.get(fileInfo).add(port);
 
         // Verifica se o arquivo foi completamente recebido
         if (fileIsComplete(fileInfo)) {

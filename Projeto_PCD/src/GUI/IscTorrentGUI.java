@@ -166,13 +166,20 @@ public class IscTorrentGUI extends JFrame {
 
             mensagem.append(String.format("Ficheiro: %s\n", fileInfo.getName()));
 
+
             // Obter os fornecedores associados ao ficheiro
-            List<Tuplo<Integer, FileInfo>> fornecedores = FileSearchManager.getPortFileInfoList();
-            for (Tuplo<Integer, FileInfo> fornecedor : fornecedores) {
-                if (fornecedor.getSegundo().equals(fileInfo)) {
-                    // tbm n estou a conseguir ir buscar o porto certo, nem o endereço. Aqui está hard coded mas é pra mudar
-                    mensagem.append(String.format("Fornecedor [endereco=/127.0.0.1, porto=%d]: %d \n", fornecedor.getPrimeiro(),DownloadManager.getReceivedFileInfoChunks(fileInfo).size()));
+            HashMap<FileInfo,List<Integer>> fornecedores2 = DownloadManager.getFileInfoPorts();
+
+            for (FileInfo fileInfo2 : fornecedores2.keySet()) {
+
+                if (fileInfo2.equals(fileInfo)) {
+                    for (int port : fornecedores2.get(fileInfo)) {                    
+                        // tbm n estou a conseguir ir buscar o porto certo, nem o endereço. Aqui está hard coded mas é pra mudar
+                        mensagem.append(String.format("Fornecedor [endereco=/127.0.0.1, porto=%d]: %d \n", port,DownloadManager.getReceivedFileInfoChunks(fileInfo).size()));
+                    }
                 }
+
+
             }
             mensagem.append(String.format("Tempo decorrido: %dms\n", tempoTotal));
         }

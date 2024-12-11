@@ -1,7 +1,6 @@
 package Logic;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -95,7 +94,6 @@ public class FileManager {
     
             String normalizedSearchStr = searchStr.trim().toLowerCase();
     
-            File[] ficheiros = getFiles();
             for (File file : files) {
                 if (file.isFile() && file.getName().toLowerCase().contains(normalizedSearchStr)) {
                     matchingFiles.add(new FileInfo(file.getName(), file.length()));

@@ -1,7 +1,5 @@
 package Logic.Download;
 
-import java.awt.Dimension;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

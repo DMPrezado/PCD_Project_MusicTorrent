@@ -111,7 +111,9 @@ public class DownloadManager {
         // Adiciona o porto à lista no mapa fileInfoPorts
         int port = chunkResult.getPortFornecedor();
         fileInfoPorts.putIfAbsent(fileInfo, new ArrayList<>());
-        fileInfoPorts.get(fileInfo).add(port);
+        if (!fileInfoPorts.get(fileInfo).contains(port)) {    
+            fileInfoPorts.get(fileInfo).add(port);
+        }
 
         // Verifica se o arquivo foi completamente recebido
         if (fileIsComplete(fileInfo)) {

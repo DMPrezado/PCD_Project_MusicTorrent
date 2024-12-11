@@ -107,6 +107,7 @@ public class Connection{
     }
 
     private void tratarChunkResult(ChunkResult chunkResult){
+        Node.getFileManager().loadNodeFiles();
         DownloadManager.receberChunkResult(chunkResult);
     }
 

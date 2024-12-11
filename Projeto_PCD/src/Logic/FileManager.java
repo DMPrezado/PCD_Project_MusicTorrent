@@ -27,7 +27,7 @@ public class FileManager {
         }
     
         // Método para carregar os ficheiros da pasta de trabalho
-        private void loadNodeFiles() {
+        public void loadNodeFiles() {
             File folder = new File(folderPath);
             
             // Verificar se a pasta existe e é um diretório
@@ -86,6 +86,7 @@ public class FileManager {
         }
     
         public List<FileInfo> searchFiles(String searchStr) {
+            loadNodeFiles();
             List<FileInfo> matchingFiles = new ArrayList<>();
     
             if (files == null || files.length == 0 || searchStr == null || searchStr.trim().isEmpty()) {

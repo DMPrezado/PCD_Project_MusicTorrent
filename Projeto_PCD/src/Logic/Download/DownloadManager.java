@@ -52,6 +52,12 @@ public class DownloadManager {
         List<Tuplo<FileInfo, List<Integer>>> selectedFilesPorts = getSelectedFileInfoPort(selectedFiles);
         
         
+
+//criar buffer de pedidos
+//uma thread por no que retiram o pedido do buffer (sem atribuir portos)
+
+//esperar pela resposta com um metodo bloqueante
+
         // Criar Thread Pool
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
@@ -93,6 +99,9 @@ public class DownloadManager {
     }
 
 
+
+// ex1. Fazer espera
+// ex2. Countdown
 
 
     //Receber Chunks
